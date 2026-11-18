@@ -33,24 +33,24 @@
 
 ## Снимки экрана
 
-Сохраните снимок поверх заглушки в папке `screenshots/` с тем же именем — ссылки ниже менять не нужно.
+Сохраните снимок поверх заглушки в папке `image/` с тем же именем — ссылки ниже менять не нужно.
 
 ### 1. Падение
 Шаг 1. Видно: запуск `crash null` и код завершения.
 
-![1. Падение](screenshots/01_crash.png)
+![1. Падение](image/01_crash.png)
 
 ### 2. Падение Python
 Шаг 2. Видно: вывод `ctypes_crash.py` и запись системы о падении.
 
-![2. Падение Python](screenshots/02_python_crash.png)
+![2. Падение Python](image/02_python_crash.png)
 
 ### 3. Отчёт AddressSanitizer
 Шаг 4. Видно: вывод `crash heap` без проверки и с AddressSanitizer (на Windows с ARM — без проверки).
 
-![3. Отчёт AddressSanitizer](screenshots/03_asan.png)
+![3. Отчёт AddressSanitizer](image/03_asan.png)
 
 ### 4. Исправление
 Шаг 6. Видно: разница файлов и вывод исправленной программы.
 
-![4. Исправление](screenshots/04_fixed.png)
+![4. Исправление](image/04_fixed.png)
