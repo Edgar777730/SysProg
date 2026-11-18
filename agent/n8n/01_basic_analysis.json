@@ -1,0 +1,130 @@
+{
+  "name": "Мониторинг агента: базовый анализ",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agent",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        100,
+        40
+      ],
+      "id": "a1b2c3d4-1111-4444-8888-1234567890ab",
+      "name": "Webhook",
+      "webhookId": "e9f8d7c6-2222-4555-9999-abcdef123456"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Ты ассистент системного администратора. От агента мониторинга поступил JSON с событием. Кратко (в 2-3 предложениях) опиши на русском языке суть события и дай рекомендацию, требуются ли какие-то действия.\n\nДанные события: {{ JSON.stringify($json.body) }}\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        380,
+        -20
+      ],
+      "id": "b2c3d4e5-3333-4666-aaaa-2345678901bc",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "qwen2.5:3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        380,
+        220
+      ],
+      "id": "c3d4e5f6-4444-4777-bbbb-3456789012cd",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "A1b2C3d4E5f6G7h8",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "admin-alerts@yandex.ru",
+        "toEmail": "sysadmin@example.com",
+        "subject": "=Уведомление агента: {{ $('Webhook').item.json.body.event }} ({{ $('Webhook').item.json.body.host }})",
+        "emailFormat": "text",
+        "text": "={{ $json.text }}\n\nИсходный пакет от агента:\n{{ JSON.stringify($('Webhook').item.json.body, null, 2) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        700,
+        -20
+      ],
+      "id": "d4e5f6a7-5555-4888-cccc-4567890123de",
+      "name": "Send an Email",
+      "webhookId": "f1e2d3c4-6666-4999-dddd-5678901234ef",
+      "credentials": {
+        "smtp": {
+          "id": "Z9y8X7w6V5u4T3s2",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7c8d9e0f-7777-4aaa-eeee-6789012345f0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b"
+  },
+  "id": "kLmNoPqRsTuVwXyZ",
+  "tags": []
+}

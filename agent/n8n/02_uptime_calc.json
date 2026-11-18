@@ -1,0 +1,130 @@
+{
+  "name": "Мониторинг агента: расчет аптайма",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agent",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        100,
+        40
+      ],
+      "id": "11223344-aaaa-4bbb-8ccc-111122223333",
+      "name": "Webhook",
+      "webhookId": "22334455-bbbb-4ccc-9ddd-222233334444"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Ты выступаешь в роли помощника сисадмина. Поступила телеметрия от рабочей станции.\nСформулируй понятный ответ на русском языке (2–3 предложения): как давно система работает без перезагрузки и рекомендуется ли её перезапустить.\nИспользуй только русский язык. Переданные числа не пересчитывай, вставь их в текст без изменений.\nИмя хоста: {{ $json.body.host }}.\nВремя непрерывной работы: {{ Math.floor($json.body.uptime_s / 86400) }} дн. {{ Math.floor($json.body.uptime_s % 86400 / 3600) }} ч.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        380,
+        -20
+      ],
+      "id": "33445566-cccc-4ddd-aeee-333344445555",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "qwen2.5:3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        380,
+        220
+      ],
+      "id": "44556677-dddd-4eee-bfff-444455556666",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "A1b2C3d4E5f6G7h8",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "admin-alerts@yandex.ru",
+        "toEmail": "sysadmin@example.com",
+        "subject": "=Отчет агента: {{ $('Webhook').item.json.body.event }} — {{ $('Webhook').item.json.body.host }}",
+        "emailFormat": "text",
+        "text": "={{ $json.text }}\n\nИсходный пакет от агента:\n{{ JSON.stringify($('Webhook').item.json.body, null, 2) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        700,
+        -20
+      ],
+      "id": "55667788-eeee-4fff-8000-555566667777",
+      "name": "Send an Email",
+      "webhookId": "66778899-ffff-4000-9111-666677778888",
+      "credentials": {
+        "smtp": {
+          "id": "Z9y8X7w6V5u4T3s2",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8899aabb-1111-4222-a333-777788889999",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b"
+  },
+  "id": "xYzAbCdEfGhIjKlM",
+  "tags": []
+}
